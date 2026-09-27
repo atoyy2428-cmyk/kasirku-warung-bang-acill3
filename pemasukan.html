@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>KasirKu - Pemasukan</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard">
+
+
+        <!-- ==========================================
+             HEADER
+        =========================================== -->
+
+        <header class="header">
+
+            <h1>KasirKu</h1>
+
+            <button
+                onclick="window.location.href='dashboard.html'"
+            >
+                Kembali
+            </button>
+
+        </header>
+
+
+
+        <!-- ==========================================
+             CONTENT
+        =========================================== -->
+
+        <main class="content">
+
+            <h2>💰 Pemasukan</h2>
+
+            <p>
+                Catat pemasukan toko.
+            </p>
+
+            <br>
+
+
+            <!-- ==========================================
+                 TOMBOL TAMBAH
+            =========================================== -->
+
+            <button
+                onclick="tampilFormPemasukan()"
+            >
+                + Tambah Pemasukan
+            </button>
+
+
+
+            <!-- ==========================================
+                 FORM PEMASUKAN
+            =========================================== -->
+
+            <div
+                id="formPemasukan"
+                style="
+                    display:none;
+                    margin-top:20px;
+                "
+            >
+
+                <h3>
+                    Tambah Pemasukan
+                </h3>
+
+
+                <input
+                    type="date"
+                    id="tanggalPemasukan"
+                >
+
+                <br><br>
+
+
+                <input
+                    type="text"
+                    id="keteranganPemasukan"
+                    placeholder="Keterangan"
+                >
+
+                <br><br>
+
+
+                <input
+                    type="number"
+                    id="jumlahPemasukan"
+                    placeholder="Jumlah"
+                    min="1"
+                >
+
+                <br><br>
+
+
+                <button
+                    onclick="simpanPemasukan()"
+                    id="tombolSimpanPemasukan"
+                >
+                    Simpan Pemasukan
+                </button>
+
+
+                <button
+                    onclick="tutupFormPemasukan()"
+                    type="button"
+                >
+                    Batal
+                </button>
+
+            </div>
+
+
+            <br><br>
+
+
+
+            <!-- ==========================================
+                 TABEL PEMASUKAN
+            =========================================== -->
+
+            <table
+                border="1"
+                width="100%"
+                cellpadding="10"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Tanggal
+                        </th>
+
+                        <th>
+                            Keterangan
+                        </th>
+
+                        <th>
+                            Jumlah
+                        </th>
+
+                        <th>
+                            Aksi
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="dataPemasukan">
+
+                </tbody>
+
+            </table>
+
+        </main>
+
+    </div>
+
+
+
+    <script>
+
+        // ==========================================
+        // VARIABEL
+        // ==========================================
+
+        let userAktif = null;
+
+
+
+        // ==========================================
+        // FORMAT RUPIAH
+        // ==========================================
+
+        function formatRupiahPemasukan(angka) {
+
+            return new Intl.NumberFormat(
+                "id-ID",
+                {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0
+                }
+            ).format(
+                Number(angka || 0)
+            );
+
+        }
+
+
+
+        // ==========================================
+        // FORMAT TANGGAL
+        // ==========================================
+
+        function formatTanggalPemasukan(tanggal) {
+
+            if (!tanggal) {
+
+                return "-";
+
+            }
+
+
+            const tanggalObj =
+                new Date(tanggal);
+
+
+            if (
+                isNaN(
+                    tanggalObj.getTime()
+                )
+            ) {
+
+                return "-";
+
+            }
+
+
+            return tanggalObj.toLocaleDateString(
+                "id-ID",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+
+        // ==========================================
+        // CEK LOGIN
+        // ==========================================
+
+        async function cekUserLogin() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getUser();
+
+
+            if (
+                error ||
+                !data ||
+                !data.user
+            ) {
+
+                alert(
+                    "Sesi login tidak ditemukan. Silakan login kembali."
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return null;
+
+            }
+
+
+            userAktif =
+                data.user;
+
+
+            return userAktif;
+
+        }
+
+
+
+        // ==========================================
+        // AMBIL DATA PEMASUKAN DARI SUPABASE
+        // ==========================================
+
+        async function ambilDataPemasukan() {
+
+            if (!userAktif) {
+
+                return [];
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+
+                    .from("pemasukan")
+
+                    .select(
+                        "id,user_id,tanggal,keterangan,jumlah"
+                    )
+
+                    .eq(
+                        "user_id",
+                        userAktif.id
+                    )
+
+                    .order(
+                        "tanggal",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Gagal mengambil pemasukan:",
+                    error
+                );
+
+
+                alert(
+                    "Gagal mengambil data pemasukan dari Supabase.\n\n" +
+                    error.message
+                );
+
+
+                return [];
+
+            }
+
+
+            return data || [];
+
+        }
+
+
+
+        // ==========================================
+        // TAMPILKAN FORM
+        // ==========================================
+
+        function tampilFormPemasukan() {
+
+            document.getElementById(
+                "formPemasukan"
+            ).style.display =
+                "block";
+
+
+            const inputTanggal =
+                document.getElementById(
+                    "tanggalPemasukan"
+                );
+
+
+            if (!inputTanggal.value) {
+
+                const sekarang =
+                    new Date();
+
+
+                const tahun =
+                    sekarang.getFullYear();
+
+
+                const bulan =
+                    String(
+                        sekarang.getMonth() + 1
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
+
+                const tanggal =
+                    String(
+                        sekarang.getDate()
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
+
+                inputTanggal.value =
+                    `${tahun}-${bulan}-${tanggal}`;
+
+            }
+
+        }
+
+
+
+        // ==========================================
+        // TUTUP FORM
+        // ==========================================
+
+        function tutupFormPemasukan() {
+
+            document.getElementById(
+                "formPemasukan"
+            ).style.display =
+                "none";
+
+        }
+
+
+
+        // ==========================================
+        // SIMPAN PEMASUKAN KE SUPABASE
+        // ==========================================
+
+        async function simpanPemasukan() {
+
+            const tanggal =
+                document.getElementById(
+                    "tanggalPemasukan"
+                ).value;
+
+
+            const keterangan =
+                document.getElementById(
+                    "keteranganPemasukan"
+                ).value.trim();
+
+
+            const jumlah =
+                Number(
+                    document.getElementById(
+                        "jumlahPemasukan"
+                    ).value
+                );
+
+
+            // ------------------------------------------
+            // VALIDASI
+            // ------------------------------------------
+
+            if (!tanggal) {
+
+                alert(
+                    "Tanggal belum dipilih."
+                );
+
+                return;
+
+            }
+
+
+            if (!keterangan) {
+
+                alert(
+                    "Keterangan belum diisi."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !jumlah ||
+                jumlah <= 0
+            ) {
+
+                alert(
+                    "Jumlah pemasukan harus lebih dari 0."
+                );
+
+                return;
+
+            }
+
+
+            if (!userAktif) {
+
+                alert(
+                    "User belum terdeteksi. Silakan login kembali."
+                );
+
+                return;
+
+            }
+
+
+
+            // ------------------------------------------
+            // TOMBOL
+            // ------------------------------------------
+
+            const tombol =
+                document.getElementById(
+                    "tombolSimpanPemasukan"
+                );
+
+
+            tombol.disabled =
+                true;
+
+
+            tombol.textContent =
+                "Menyimpan...";
+
+
+
+            try {
+
+                // --------------------------------------
+                // SIMPAN KE SUPABASE
+                // --------------------------------------
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+
+                        .from("pemasukan")
+
+                        .insert({
+
+                            user_id:
+                                userAktif.id,
+
+                            tanggal:
+                                `${tanggal}T00:00:00+07:00`,
+
+                            keterangan:
+                                keterangan,
+
+                            jumlah:
+                                jumlah
+
+                        });
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+
+                // --------------------------------------
+                // BERHASIL
+                // --------------------------------------
+
+                alert(
+                    "Pemasukan berhasil disimpan ke Supabase."
+                );
+
+
+                // Kosongkan form
+
+                document.getElementById(
+                    "keteranganPemasukan"
+                ).value =
+                    "";
+
+
+                document.getElementById(
+                    "jumlahPemasukan"
+                ).value =
+                    "";
+
+
+                // Tutup form
+
+                tutupFormPemasukan();
+
+
+                // Tampilkan ulang
+
+                await tampilkanPemasukan();
+
+
+
+            } catch (error) {
+
+                console.error(
+                    "Gagal menyimpan pemasukan:",
+                    error
+                );
+
+
+                alert(
+                    "Pemasukan gagal disimpan.\n\n" +
+                    (
+                        error.message ||
+                        "Terjadi kesalahan pada Supabase."
+                    )
+                );
+
+            } finally {
+
+                tombol.disabled =
+                    false;
+
+
+                tombol.textContent =
+                    "Simpan Pemasukan";
+
+            }
+
+        }
+
+
+
+        // ==========================================
+        // TAMPILKAN DATA PEMASUKAN
+        // ==========================================
+
+        async function tampilkanPemasukan() {
+
+            const tbody =
+                document.getElementById(
+                    "dataPemasukan"
+                );
+
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        style="
+                            text-align:center;
+                        "
+                    >
+
+                        Memuat data pemasukan...
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            const data =
+                await ambilDataPemasukan();
+
+
+            tbody.innerHTML =
+                "";
+
+
+            if (
+                data.length === 0
+            ) {
+
+                tbody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            style="
+                                text-align:center;
+                            "
+                        >
+
+                            Belum ada data pemasukan.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            data.forEach(
+                function(item) {
+
+                    const tr =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    // ----------------------------------
+                    // TANGGAL
+                    // ----------------------------------
+
+                    const tdTanggal =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    tdTanggal.textContent =
+                        formatTanggalPemasukan(
+                            item.tanggal
+                        );
+
+
+
+                    // ----------------------------------
+                    // KETERANGAN
+                    // ----------------------------------
+
+                    const tdKeterangan =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    tdKeterangan.textContent =
+                        item.keterangan ||
+                        "-";
+
+
+
+                    // ----------------------------------
+                    // JUMLAH
+                    // ----------------------------------
+
+                    const tdJumlah =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    tdJumlah.textContent =
+                        formatRupiahPemasukan(
+                            item.jumlah
+                        );
+
+
+
+                    // ----------------------------------
+                    // AKSI
+                    // ----------------------------------
+
+                    const tdAksi =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    const tombolHapus =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    tombolHapus.textContent =
+                        "🗑️ Hapus";
+
+
+                    tombolHapus.onclick =
+                        function() {
+
+                            hapusPemasukan(
+                                item.id
+                            );
+
+                        };
+
+
+                    tdAksi.appendChild(
+                        tombolHapus
+                    );
+
+
+
+                    // ----------------------------------
+                    // MASUKKAN KE BARIS
+                    // ----------------------------------
+
+                    tr.appendChild(
+                        tdTanggal
+                    );
+
+
+                    tr.appendChild(
+                        tdKeterangan
+                    );
+
+
+                    tr.appendChild(
+                        tdJumlah
+                    );
+
+
+                    tr.appendChild(
+                        tdAksi
+                    );
+
+
+                    tbody.appendChild(
+                        tr
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        // ==========================================
+        // HAPUS PEMASUKAN DARI SUPABASE
+        // ==========================================
+
+        async function hapusPemasukan(id) {
+
+            const yakin =
+                confirm(
+                    "Apakah kamu yakin ingin menghapus pemasukan ini?"
+                );
+
+
+            if (!yakin) {
+
+                return;
+
+            }
+
+
+            if (!userAktif) {
+
+                alert(
+                    "User belum terdeteksi."
+                );
+
+                return;
+
+            }
+
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+
+                        .from("pemasukan")
+
+                        .delete()
+
+                        .eq(
+                            "id",
+                            id
+                        )
+
+                        .eq(
+                            "user_id",
+                            userAktif.id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                alert(
+                    "Pemasukan berhasil dihapus."
+                );
+
+
+                await tampilkanPemasukan();
+
+
+
+            } catch (error) {
+
+                console.error(
+                    "Gagal menghapus pemasukan:",
+                    error
+                );
+
+
+                alert(
+                    "Pemasukan gagal dihapus.\n\n" +
+                    (
+                        error.message ||
+                        "Terjadi kesalahan pada Supabase."
+                    )
+                );
+
+            }
+
+        }
+
+
+
+        // ==========================================
+        // JALANKAN SAAT HALAMAN DIBUKA
+        // ==========================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function() {
+
+                const user =
+                    await cekUserLogin();
+
+
+                if (!user) {
+
+                    return;
+
+                }
+
+
+                await tampilkanPemasukan();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

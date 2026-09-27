@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profil Kasir - KasirKu</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div>
+                <h1>KasirKu</h1>
+                <p>WARUNG BANG ACILL</p>
+            </div>
+
+            <button
+                type="button"
+                onclick="window.location.href='dashboard.html'"
+                class="btn-secondary">
+                ← Dashboard
+            </button>
+        </header>
+
+
+        <!-- PROFIL -->
+        <section class="card">
+
+            <h2>👤 Profil Akun Kasir</h2>
+
+            <p>
+                Kelola informasi akun kasir Anda di halaman ini.
+            </p>
+
+            <form id="profilForm">
+
+                <!-- NAMA -->
+                <div class="form-group">
+                    <label for="namaProfil">
+                        Nama Kasir
+                    </label>
+
+                    <input
+                        type="text"
+                        id="namaProfil"
+                        placeholder="Masukkan nama kasir"
+                        required>
+                </div>
+
+
+                <!-- USERNAME -->
+                <div class="form-group">
+                    <label for="usernameProfil">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        id="usernameProfil"
+                        placeholder="Masukkan username"
+                        required>
+                </div>
+
+
+                <!-- TELEPON -->
+                <div class="form-group">
+                    <label for="teleponProfil">
+                        Nomor HP
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="teleponProfil"
+                        placeholder="Masukkan nomor HP"
+                        required>
+                </div>
+
+
+                <!-- EMAIL -->
+                <div class="form-group">
+                    <label for="emailProfil">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="emailProfil"
+                        placeholder="Masukkan email"
+                        required>
+                </div>
+
+
+                <hr>
+
+
+                <h3>🔑 Ubah Password</h3>
+
+                <p>
+                    Kosongkan bagian password jika tidak ingin
+                    mengubah password.
+                </p>
+
+
+                <!-- PASSWORD LAMA -->
+                <div class="form-group">
+                    <label for="passwordLama">
+                        Password Lama
+                    </label>
+
+                    <input
+                        type="password"
+                        id="passwordLama"
+                        placeholder="Masukkan password lama">
+                </div>
+
+
+                <!-- PASSWORD BARU -->
+                <div class="form-group">
+                    <label for="passwordBaru">
+                        Password Baru
+                    </label>
+
+                    <input
+                        type="password"
+                        id="passwordBaru"
+                        placeholder="Masukkan password baru">
+                </div>
+
+
+                <!-- KONFIRMASI PASSWORD -->
+                <div class="form-group">
+                    <label for="konfirmasiPasswordBaru">
+                        Konfirmasi Password Baru
+                    </label>
+
+                    <input
+                        type="password"
+                        id="konfirmasiPasswordBaru"
+                        placeholder="Ulangi password baru">
+                </div>
+
+
+                <!-- PESAN -->
+                <div
+                    id="messageProfil"
+                    style="
+                        margin: 15px 0;
+                        font-weight: bold;
+                    ">
+                </div>
+
+
+                <!-- BUTTON -->
+                <button
+                    type="submit"
+                    class="btn-primary">
+                    💾 Simpan Perubahan
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- INFORMASI AKUN -->
+        <section class="card">
+
+            <h2>ℹ️ Informasi Akun</h2>
+
+            <p>
+                Username digunakan untuk login ke aplikasi
+                KasirKu.
+            </p>
+
+            <p>
+                Data barang, transaksi, pemasukan dan pengeluaran
+                tetap tersimpan berdasarkan akun kasir yang sedang
+                login.
+            </p>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer>
+            <p>
+                © 2026 KasirKu - WARUNG BANG ACILL
+            </p>
+        </footer>
+
+    </div>
+
+
+    <!-- SCRIPT UTAMA -->
+    <script src="script.js"></script>
+
+</body>
+</html>

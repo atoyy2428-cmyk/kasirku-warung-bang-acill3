@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KasirKu - Riwayat Transaksi</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7fb;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1f2937;
+        }
+
+        .riwayat-page {
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .riwayat-header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 22px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .header-brand h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        .header-brand p {
+            margin: 5px 0 0;
+            opacity: 0.85;
+            font-size: 14px;
+        }
+
+        .btn-kembali {
+            border: none;
+            background: white;
+            color: #1d4ed8;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-kembali:hover {
+            background: #eff6ff;
+        }
+
+        /* CONTENT */
+        .riwayat-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        .judul-halaman {
+            margin-bottom: 25px;
+        }
+
+        .judul-halaman h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .judul-halaman p {
+            margin: 8px 0 0;
+            color: #6b7280;
+        }
+
+        /* STATISTIK */
+        .statistik {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box {
+            flex: 1;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-hapus {
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-hapus:hover {
+            background: #b91c1c;
+        }
+
+        /* STATUS */
+        .status-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+            color: #64748b;
+            text-align: center;
+            display: none;
+        }
+
+        .status-box.tampil {
+            display: block;
+        }
+
+        /* TRANSAKSI */
+        .transaksi-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+            margin-bottom: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .transaksi-header {
+            padding: 18px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .transaksi-identitas {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .icon-transaksi {
+            width: 45px;
+            height: 45px;
+            background: #dbeafe;
+            color: #2563eb;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .transaksi-identitas h3 {
+            margin: 0 0 4px;
+            font-size: 17px;
+            color: #111827;
+        }
+
+        .tanggal {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .badge-transaksi {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .transaksi-body {
+            padding: 20px;
+        }
+
+        .ringkasan-transaksi {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .ringkasan-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 13px;
+            border: 1px solid #eef2f7;
+        }
+
+        .ringkasan-item span {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .ringkasan-item strong {
+            font-size: 16px;
+            color: #111827;
+        }
+
+        .total-transaksi strong {
+            color: #2563eb;
+        }
+
+        /* TOMBOL AKSI */
+        .aksi-transaksi {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tombol-detail,
+        .tombol-cetak {
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tombol-detail {
+            background: #2563eb;
+        }
+
+        .tombol-detail:hover {
+            background: #1d4ed8;
+        }
+
+        .tombol-cetak {
+            background: #16a34a;
+        }
+
+        .tombol-cetak:hover {
+            background: #15803d;
+        }
+
+        /* DETAIL */
+        .detail-transaksi {
+            display: none;
+            border-top: 1px dashed #d1d5db;
+            padding-top: 18px;
+            margin-top: 18px;
+        }
+
+        .detail-transaksi.terbuka {
+            display: block;
+        }
+
+        .detail-title {
+            margin: 0 0 13px;
+            font-size: 15px;
+            color: #111827;
+        }
+
+        .tabel-wrapper {
+            overflow-x: auto;
+        }
+
+        .tabel-barang {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        .tabel-barang th {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 12px;
+            text-align: left;
+            padding: 11px 12px;
+        }
+
+        .tabel-barang td {
+            padding: 12px;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 13px;
+        }
+
+        .tabel-barang th:last-child,
+        .tabel-barang td:last-child {
+            text-align: right;
+        }
+
+        .tabel-barang th:nth-child(2),
+        .tabel-barang td:nth-child(2),
+        .tabel-barang th:nth-child(3),
+        .tabel-barang td:nth-child(3) {
+            text-align: center;
+        }
+
+        .pembayaran {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .pembayaran-item {
+            padding: 12px 14px;
+            background: #f8fafc;
+            border-radius: 9px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .pembayaran-item span {
+            color: #64748b;
+        }
+
+        .pembayaran-item strong {
+            color: #111827;
+        }
+
+        /* KOSONG */
+        .kosong {
+            background: white;
+            border: 1px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 55px 20px;
+            text-align: center;
+        }
+
+        .kosong-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .kosong h3 {
+            margin: 0 0 7px;
+            color: #334155;
+        }
+
+        .kosong p {
+            margin: 0;
+            color: #64748b;
+        }
+
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 35px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+
+            .riwayat-header {
+                padding: 18px;
+            }
+
+            .header-brand h1 {
+                font-size: 22px;
+            }
+
+            .header-brand p {
+                display: none;
+            }
+
+            .riwayat-content {
+                padding: 22px 14px 40px;
+            }
+
+            .judul-halaman h2 {
+                font-size: 23px;
+            }
+
+            .statistik {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-hapus {
+                width: 100%;
+            }
+
+            .transaksi-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .ringkasan-transaksi {
+                grid-template-columns: 1fr;
+            }
+
+            .pembayaran {
+                grid-template-columns: 1fr;
+            }
+
+            .aksi-transaksi {
+                flex-direction: column;
+            }
+
+            .tombol-detail,
+            .tombol-cetak {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="riwayat-page">
+
+        <!-- HEADER -->
+        <header class="riwayat-header">
+
+            <div class="header-brand">
+                <h1>KasirKu</h1>
+                <p>WARUNG BANG ACILL</p>
+            </div>
+
+            <button
+                type="button"
+                class="btn-kembali"
+                onclick="window.location.href='dashboard.html'">
+                ← Dashboard
+            </button>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <main class="riwayat-content">
+
+            <div class="judul-halaman">
+
+                <h2>
+                    📋 Riwayat Transaksi
+                </h2>
+
+                <p>
+                    Lihat detail transaksi dan cetak ulang struk penjualan.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTIK -->
+            <div class="statistik">
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Total Transaksi
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="jumlahTransaksi">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        Total Omzet
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="totalOmzet">
+                        Rp0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOOLBAR -->
+            <div class="toolbar">
+
+                <div class="search-box">
+
+                    <input
+                        type="text"
+                        id="inputPencarian"
+                        placeholder="🔎 Cari tanggal atau nama barang..."
+                        oninput="cariTransaksi()">
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-hapus"
+                    onclick="hapusSemuaRiwayat()">
+                    🗑️ Hapus Semua
+                </button>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div
+                id="statusBox"
+                class="status-box">
+                Memuat riwayat transaksi...
+            </div>
+
+
+            <!-- DATA RIWAYAT -->
+            <div id="dataRiwayat"></div>
+
+
+            <div class="footer">
+                KasirKu © 2026 • WARUNG BANG ACILL
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+
+    <script>
+
+        /* =====================================
+           DATA
+        ===================================== */
+
+        let semuaTransaksi = [];
+        let userAktif = null;
+
+
+        /* =====================================
+           FORMAT RUPIAH
+        ===================================== */
+
+        function formatRupiah(angka) {
+
+            return "Rp" +
+                Number(angka || 0).toLocaleString("id-ID");
+
+        }
+
+
+        /* =====================================
+           ESCAPE HTML
+        ===================================== */
+
+        function escapeHTML(teks) {
+
+            return String(teks ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =====================================
+           STATUS
+        ===================================== */
+
+        function tampilkanStatus(pesan, tampil = true) {
+
+            const box =
+                document.getElementById("statusBox");
+
+            box.textContent = pesan;
+
+            if (tampil) {
+                box.classList.add("tampil");
+            } else {
+                box.classList.remove("tampil");
+            }
+
+        }
+
+
+        /* =====================================
+           CEK USER LOGIN
+        ===================================== */
+
+        async function cekUserLogin() {
+
+            const {
+                data,
+                error
+            } = await supabaseClient.auth.getUser();
+
+
+            if (error || !data.user) {
+
+                alert(
+                    "Sesi login tidak ditemukan. Silakan login kembali."
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return null;
+            }
+
+
+            userAktif =
+                data.user;
+
+            return userAktif;
+
+        }
+
+
+        /* =====================================
+           AMBIL DATA TRANSAKSI SUPABASE
+        ===================================== */
+
+        async function ambilTransaksi() {
+
+            const user =
+                await cekUserLogin();
+
+            if (!user) {
+                return;
+            }
+
+
+            tampilkanStatus(
+                "⏳ Memuat riwayat transaksi..."
+            );
+
+
+            /*
+             * Ambil transaksi milik user
+             */
+
+            const {
+                data: transaksi,
+                error: transaksiError
+            } = await supabaseClient
+                .from("transaksi")
+                .select(
+                    "id,user_id,tanggal,total,bayar,kembalian"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "tanggal",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (transaksiError) {
+
+                console.error(
+                    "Gagal mengambil transaksi:",
+                    transaksiError
+                );
+
+                tampilkanStatus(
+                    "❌ Gagal mengambil data transaksi dari Supabase."
+                );
+
+                alert(
+                    "Gagal mengambil data transaksi dari Supabase."
+                );
+
+                return;
+            }
+
+
+            /*
+             * Kalau belum ada transaksi
+             */
+
+            if (!transaksi || transaksi.length === 0) {
+
+                semuaTransaksi = [];
+
+                tampilkanStatus(
+                    "",
+                    false
+                );
+
+                tampilkanRiwayat();
+
+                return;
+            }
+
+
+            /*
+             * Ambil ID transaksi
+             */
+
+            const idsTransaksi =
+                transaksi.map(
+                    item => item.id
+                );
+
+
+            /*
+             * Ambil detail transaksi
+             */
+
+            const {
+                data: detail,
+                error: detailError
+            } = await supabaseClient
+                .from("detail_transaksi")
+                .select(
+                    "id,transaksi_id,user_id,barang_id,kode_barang,nama_barang,harga,jumlah,subtotal"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .in(
+                    "transaksi_id",
+                    idsTransaksi
+                );
+
+
+            if (detailError) {
+
+                console.error(
+                    "Gagal mengambil detail transaksi:",
+                    detailError
+                );
+
+                tampilkanStatus(
+                    "❌ Gagal mengambil detail transaksi."
+                );
+
+                alert(
+                    "Gagal mengambil detail transaksi dari Supabase."
+                );
+
+                return;
+            }
+
+
+            /*
+             * Gabungkan transaksi
+             * dengan detail transaksi
+             */
+
+            semuaTransaksi =
+                transaksi.map(
+                    function(item) {
+
+                        const detailItem =
+                            (detail || [])
+                                .filter(
+                                    function(barang) {
+
+                                        return String(
+                                            barang.transaksi_id
+                                        ) === String(
+                                            item.id
+                                        );
+
+                                    }
+                                )
+                                .map(
+                                    function(barang) {
+
+                                        return {
+
+                                            id:
+                                                barang.id,
+
+                                            barangId:
+                                                barang.barang_id,
+
+                                            kode:
+                                                barang.kode_barang,
+
+                                            nama:
+                                                barang.nama_barang,
+
+                                            harga:
+                                                Number(
+                                                    barang.harga || 0
+                                                ),
+
+                                            jumlah:
+                                                Number(
+                                                    barang.jumlah || 0
+                                                ),
+
+                                            subtotal:
+                                                Number(
+                                                    barang.subtotal || 0
+                                                )
+
+                                        };
+
+                                    }
+                                );
+
+
+                        return {
+
+                            id:
+                                item.id,
+
+                            user_id:
+                                item.user_id,
+
+                            tanggal:
+                                item.tanggal,
+
+                            total:
+                                Number(
+                                    item.total || 0
+                                ),
+
+                            bayar:
+                                Number(
+                                    item.bayar || 0
+                                ),
+
+                            kembalian:
+                                Number(
+                                    item.kembalian || 0
+                                ),
+
+                            items:
+                                detailItem
+
+                        };
+
+                    }
+                );
+
+
+            tampilkanStatus(
+                "",
+                false
+            );
+
+
+            tampilkanRiwayat();
+
+        }
+
+
+        /* =====================================
+           FORMAT TANGGAL
+        ===================================== */
+
+        function formatTanggal(tanggal) {
+
+            if (!tanggal) {
+
+                return "Tanggal tidak tersedia";
+
+            }
+
+
+            const waktu =
+                new Date(tanggal);
+
+
+            if (Number.isNaN(waktu.getTime())) {
+
+                return String(tanggal);
+
+            }
+
+
+            return waktu.toLocaleString(
+                "id-ID",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           CETAK ULANG STRUK
+        ===================================== */
+
+        function cetakStruk(item) {
+
+            const dataStruk = {
+
+                id:
+                    String(
+                        item.id
+                    ),
+
+                tanggal:
+                    formatTanggal(
+                        item.tanggal
+                    ),
+
+                items:
+                    (item.items || [])
+                        .map(
+                            function(barang) {
+
+                                return {
+
+                                    kode:
+                                        barang.kode,
+
+                                    nama:
+                                        barang.nama,
+
+                                    harga:
+                                        Number(
+                                            barang.harga || 0
+                                        ),
+
+                                    jumlah:
+                                        Number(
+                                            barang.jumlah || 0
+                                        ),
+
+                                    subtotal:
+                                        Number(
+                                            barang.subtotal || 0
+                                        )
+
+                                };
+
+                            }
+                        ),
+
+                total:
+                    Number(
+                        item.total || 0
+                    ),
+
+                bayar:
+                    Number(
+                        item.bayar || 0
+                    ),
+
+                kembalian:
+                    Number(
+                        item.kembalian || 0
+                    )
+
+            };
+
+
+            /*
+             * Struk masih memakai localStorage
+             * sebagai data sementara untuk halaman struk.
+             *
+             * Ini BUKAN penyimpanan riwayat.
+             */
+
+            localStorage.setItem(
+                "strukTerakhir",
+                JSON.stringify(
+                    dataStruk
+                )
+            );
+
+
+            window.location.href =
+                "struk.html";
+
+        }
+
+
+        /* =====================================
+           TAMPILKAN RIWAYAT
+        ===================================== */
+
+        function tampilkanRiwayat(
+            data = semuaTransaksi
+        ) {
+
+            const container =
+                document.getElementById(
+                    "dataRiwayat"
+                );
+
+
+            container.innerHTML =
+                "";
+
+
+            /* ================================
+               STATISTIK
+            ================================= */
+
+            document.getElementById(
+                "jumlahTransaksi"
+            ).textContent =
+                semuaTransaksi.length;
+
+
+            const totalOmzet =
+                semuaTransaksi.reduce(
+                    function(
+                        total,
+                        item
+                    ) {
+
+                        return total +
+                            Number(
+                                item.total || 0
+                            );
+
+                    },
+                    0
+                );
+
+
+            document.getElementById(
+                "totalOmzet"
+            ).textContent =
+                formatRupiah(
+                    totalOmzet
+                );
+
+
+            /* ================================
+               JIKA KOSONG
+            ================================= */
+
+            if (data.length === 0) {
+
+                const kosong =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                kosong.className =
+                    "kosong";
+
+
+                const sedangMencari =
+                    semuaTransaksi.length > 0;
+
+
+                kosong.innerHTML = `
+
+                    <div class="kosong-icon">
+                        🧾
+                    </div>
+
+                    <h3>
+                        ${
+                            sedangMencari
+                                ? "Transaksi Tidak Ditemukan"
+                                : "Belum Ada Transaksi"
+                        }
+                    </h3>
+
+                    <p>
+                        ${
+                            sedangMencari
+                                ? "Coba gunakan kata pencarian yang berbeda."
+                                : "Belum ada transaksi penjualan yang tersimpan."
+                        }
+                    </p>
+
+                `;
+
+
+                container.appendChild(
+                    kosong
+                );
+
+
+                return;
+
+            }
+
+
+            /* ================================
+               TAMPILKAN DATA
+            ================================= */
+
+            data.forEach(
+                function(item) {
+
+                    const kartu =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    kartu.className =
+                        "transaksi-card";
+
+
+                    /* =========================
+                       HEADER
+                    ========================= */
+
+                    const header =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    header.className =
+                        "transaksi-header";
+
+
+                    const identitas =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    identitas.className =
+                        "transaksi-identitas";
+
+
+                    const icon =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    icon.className =
+                        "icon-transaksi";
+
+                    icon.textContent =
+                        "🧾";
+
+
+                    const info =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    const judul =
+                        document.createElement(
+                            "h3"
+                        );
+
+
+                    judul.textContent =
+                        "Transaksi #" +
+                        item.id;
+
+
+                    const tanggal =
+                        document.createElement(
+                            "p"
+                        );
+
+
+                    tanggal.className =
+                        "tanggal";
+
+
+                    tanggal.textContent =
+                        formatTanggal(
+                            item.tanggal
+                        );
+
+
+                    info.appendChild(
+                        judul
+                    );
+
+                    info.appendChild(
+                        tanggal
+                    );
+
+
+                    identitas.appendChild(
+                        icon
+                    );
+
+                    identitas.appendChild(
+                        info
+                    );
+
+
+                    const badge =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    badge.className =
+                        "badge-transaksi";
+
+                    badge.textContent =
+                        "Selesai";
+
+
+                    header.appendChild(
+                        identitas
+                    );
+
+                    header.appendChild(
+                        badge
+                    );
+
+
+                    kartu.appendChild(
+                        header
+                    );
+
+
+                    /* =========================
+                       BODY
+                    ========================= */
+
+                    const body =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    body.className =
+                        "transaksi-body";
+
+
+                    /* =========================
+                       JUMLAH ITEM
+                    ========================= */
+
+                    const jumlahBarang =
+                        (item.items || [])
+                            .reduce(
+                                function(
+                                    total,
+                                    barang
+                                ) {
+
+                                    return total +
+                                        Number(
+                                            barang.jumlah || 0
+                                        );
+
+                                },
+                                0
+                            );
+
+
+                    /* =========================
+                       RINGKASAN
+                    ========================= */
+
+                    const ringkasan =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    ringkasan.className =
+                        "ringkasan-transaksi";
+
+
+                    ringkasan.innerHTML = `
+
+                        <div class="ringkasan-item">
+
+                            <span>
+                                Jumlah Item
+                            </span>
+
+                            <strong>
+                                ${jumlahBarang} item
+                            </strong>
+
+                        </div>
+
+
+                        <div class="ringkasan-item total-transaksi">
+
+                            <span>
+                                Total Belanja
+                            </span>
+
+                            <strong>
+                                ${formatRupiah(item.total)}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="ringkasan-item">
+
+                            <span>
+                                Uang Bayar
+                            </span>
+
+                            <strong>
+                                ${formatRupiah(item.bayar)}
+                            </strong>
+
+                        </div>
+
+                    `;
+
+
+                    body.appendChild(
+                        ringkasan
+                    );
+
+
+                    /* =========================
+                       AKSI
+                    ========================= */
+
+                    const aksi =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    aksi.className =
+                        "aksi-transaksi";
+
+
+                    const tombolDetail =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    tombolDetail.type =
+                        "button";
+
+                    tombolDetail.className =
+                        "tombol-detail";
+
+                    tombolDetail.textContent =
+                        "👁️ Lihat Detail";
+
+
+                    const tombolCetak =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    tombolCetak.type =
+                        "button";
+
+                    tombolCetak.className =
+                        "tombol-cetak";
+
+                    tombolCetak.textContent =
+                        "🧾 Cetak Struk";
+
+
+                    aksi.appendChild(
+                        tombolDetail
+                    );
+
+                    aksi.appendChild(
+                        tombolCetak
+                    );
+
+
+                    body.appendChild(
+                        aksi
+                    );
+
+
+                    /* =========================
+                       DETAIL
+                    ========================= */
+
+                    const detail =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    detail.className =
+                        "detail-transaksi";
+
+
+                    const detailTitle =
+                        document.createElement(
+                            "h4"
+                        );
+
+
+                    detailTitle.className =
+                        "detail-title";
+
+                    detailTitle.textContent =
+                        "Detail Barang";
+
+
+                    detail.appendChild(
+                        detailTitle
+                    );
+
+
+                    /* =========================
+                       TABEL BARANG
+                    ========================= */
+
+                    const wrapper =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    wrapper.className =
+                        "tabel-wrapper";
+
+
+                    const tabel =
+                        document.createElement(
+                            "table"
+                        );
+
+
+                    tabel.className =
+                        "tabel-barang";
+
+
+                    tabel.innerHTML = `
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Barang
+                                </th>
+
+                                <th>
+                                    Harga
+                                </th>
+
+                                <th>
+                                    Jumlah
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody></tbody>
+
+                    `;
+
+
+                    const tbody =
+                        tabel.querySelector(
+                            "tbody"
+                        );
+
+
+                    if (
+                        !item.items ||
+                        item.items.length === 0
+                    ) {
+
+                        const row =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        row.innerHTML = `
+
+                            <td
+                                colspan="4"
+                                style="text-align:center;color:#94a3b8;"
+                            >
+                                Detail barang tidak tersedia.
+                            </td>
+
+                        `;
+
+
+                        tbody.appendChild(
+                            row
+                        );
+
+                    } else {
+
+                        item.items.forEach(
+                            function(barang) {
+
+                                const row =
+                                    document.createElement(
+                                        "tr"
+                                    );
+
+
+                                const totalBarang =
+                                    Number(
+                                        barang.subtotal ||
+                                        (
+                                            Number(
+                                                barang.harga || 0
+                                            ) *
+                                            Number(
+                                                barang.jumlah || 0
+                                            )
+                                        )
+                                    );
+
+
+                                row.innerHTML = `
+
+                                    <td>
+                                        ${escapeHTML(
+                                            barang.nama || "-"
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        ${formatRupiah(
+                                            barang.harga
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        ${Number(
+                                            barang.jumlah || 0
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        ${formatRupiah(
+                                            totalBarang
+                                        )}
+                                    </td>
+
+                                `;
+
+
+                                tbody.appendChild(
+                                    row
+                                );
+
+                            }
+                        );
+
+                    }
+
+
+                    wrapper.appendChild(
+                        tabel
+                    );
+
+
+                    detail.appendChild(
+                        wrapper
+                    );
+
+
+                    /* =========================
+                       PEMBAYARAN
+                    ========================= */
+
+                    const pembayaran =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    pembayaran.className =
+                        "pembayaran";
+
+
+                    pembayaran.innerHTML = `
+
+                        <div class="pembayaran-item">
+
+                            <span>
+                                Total Belanja
+                            </span>
+
+                            <strong>
+                                ${formatRupiah(
+                                    item.total
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="pembayaran-item">
+
+                            <span>
+                                Uang Bayar
+                            </span>
+
+                            <strong>
+                                ${formatRupiah(
+                                    item.bayar
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="pembayaran-item">
+
+                            <span>
+                                Kembalian
+                            </span>
+
+                            <strong>
+                                ${formatRupiah(
+                                    item.kembalian
+                                )}
+                            </strong>
+
+                        </div>
+
+                    `;
+
+
+                    detail.appendChild(
+                        pembayaran
+                    );
+
+
+                    body.appendChild(
+                        detail
+                    );
+
+
+                    /* =========================
+                       EVENT DETAIL
+                    ========================= */
+
+                    tombolDetail.addEventListener(
+                        "click",
+                        function() {
+
+                            const terbuka =
+                                detail.classList.toggle(
+                                    "terbuka"
+                                );
+
+
+                            tombolDetail.textContent =
+                                terbuka
+                                    ? "▲ Tutup Detail"
+                                    : "👁️ Lihat Detail";
+
+                        }
+                    );
+
+
+                    /* =========================
+                       EVENT CETAK
+                    ========================= */
+
+                    tombolCetak.addEventListener(
+                        "click",
+                        function() {
+
+                            cetakStruk(
+                                item
+                            );
+
+                        }
+                    );
+
+
+                    kartu.appendChild(
+                        body
+                    );
+
+
+                    container.appendChild(
+                        kartu
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           PENCARIAN
+        ===================================== */
+
+        function cariTransaksi() {
+
+            const kata =
+                document.getElementById(
+                    "inputPencarian"
+                )
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+
+            if (kata === "") {
+
+                tampilkanRiwayat(
+                    semuaTransaksi
+                );
+
+                return;
+
+            }
+
+
+            const hasil =
+                semuaTransaksi.filter(
+                    function(item) {
+
+                        const tanggal =
+                            String(
+                                item.tanggal || ""
+                            )
+                                .toLowerCase();
+
+
+                        const tanggalFormat =
+                            formatTanggal(
+                                item.tanggal
+                            )
+                                .toLowerCase();
+
+
+                        const namaBarang =
+                            (item.items || [])
+                                .map(
+                                    function(barang) {
+
+                                        return String(
+                                            barang.nama || ""
+                                        )
+                                            .toLowerCase();
+
+                                    }
+                                )
+                                .join(" ");
+
+
+                        const idTransaksi =
+                            String(
+                                item.id || ""
+                            )
+                                .toLowerCase();
+
+
+                        return (
+                            tanggal.includes(kata) ||
+                            tanggalFormat.includes(kata) ||
+                            namaBarang.includes(kata) ||
+                            idTransaksi.includes(kata)
+                        );
+
+                    }
+                );
+
+
+            tampilkanRiwayat(
+                hasil
+            );
+
+        }
+
+
+        /* =====================================
+           HAPUS SEMUA RIWAYAT
+        ===================================== */
+
+        async function hapusSemuaRiwayat() {
+
+            if (
+                !semuaTransaksi.length
+            ) {
+
+                alert(
+                    "Belum ada riwayat transaksi."
+                );
+
+                return;
+
+            }
+
+
+            const yakin =
+                confirm(
+                    "Yakin ingin menghapus semua riwayat transaksi?\n\nData transaksi yang dihapus dari Supabase tidak dapat dikembalikan."
+                );
+
+
+            if (!yakin) {
+                return;
+            }
+
+
+            const user =
+                await cekUserLogin();
+
+            if (!user) {
+                return;
+            }
+
+
+            tampilkanStatus(
+                "⏳ Menghapus semua riwayat transaksi..."
+            );
+
+
+            /*
+             * Ambil ID transaksi milik user
+             */
+
+            const idsTransaksi =
+                semuaTransaksi.map(
+                    item => item.id
+                );
+
+
+            /*
+             * Hapus detail terlebih dahulu.
+             *
+             * Ini dibuat agar aman jika
+             * detail_transaksi memiliki
+             * foreign key ke transaksi.
+             */
+
+            const {
+                error: detailError
+            } = await supabaseClient
+                .from("detail_transaksi")
+                .delete()
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .in(
+                    "transaksi_id",
+                    idsTransaksi
+                );
+
+
+            if (detailError) {
+
+                console.error(
+                    "Gagal menghapus detail transaksi:",
+                    detailError
+                );
+
+                tampilkanStatus(
+                    "",
+                    false
+                );
+
+                alert(
+                    "Gagal menghapus detail transaksi."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Setelah detail terhapus,
+             * hapus transaksi induk.
+             */
+
+            const {
+                error: transaksiError
+            } = await supabaseClient
+                .from("transaksi")
+                .delete()
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .in(
+                    "id",
+                    idsTransaksi
+                );
+
+
+            if (transaksiError) {
+
+                console.error(
+                    "Gagal menghapus transaksi:",
+                    transaksiError
+                );
+
+                tampilkanStatus(
+                    "",
+                    false
+                );
+
+                alert(
+                    "Detail transaksi berhasil dihapus, tetapi transaksi utama gagal dihapus."
+                );
+
+                await ambilTransaksi();
+
+                return;
+
+            }
+
+
+            semuaTransaksi =
+                [];
+
+
+            document.getElementById(
+                "inputPencarian"
+            ).value =
+                "";
+
+
+            tampilkanStatus(
+                "",
+                false
+            );
+
+
+            tampilkanRiwayat();
+
+
+            alert(
+                "Semua riwayat transaksi berhasil dihapus dari Supabase."
+            );
+
+        }
+
+
+        /* =====================================
+           JALANKAN SAAT HALAMAN DIBUKA
+        ===================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function() {
+
+                await ambilTransaksi();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

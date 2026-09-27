@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KasirKu - Kasir</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Arial,sans-serif;background:#f4f7fb;color:#1e293b;min-height:100vh}
+.topbar{background:linear-gradient(135deg,#172554,#2563eb);color:white;padding:17px 30px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 15px rgba(15,23,42,.15);position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:12px}.brand-icon{width:45px;height:45px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:23px}
+.brand-text h1{font-size:22px;margin-bottom:2px}.brand-text p{font-size:11px;opacity:.8}
+.btn-kembali{border:none;color:white;background:rgba(255,255,255,.14);padding:10px 17px;border-radius:10px;cursor:pointer;font-weight:600;transition:.2s}.btn-kembali:hover{background:rgba(255,255,255,.25);transform:translateY(-1px)}
+.container{width:min(1250px,94%);margin:28px auto 50px}.page-title{margin-bottom:22px}.page-title h2{color:#172554;font-size:26px;margin-bottom:5px}.page-title p{color:#64748b;font-size:13px}
+.kasir-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(350px,.8fr);gap:20px;align-items:start}
+.panel{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:21px;box-shadow:0 6px 22px rgba(15,23,42,.05)}
+.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.panel-header h3{color:#172554;font-size:17px}.panel-header span{color:#64748b;font-size:11px}
+.produk-box{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;gap:12px;align-items:end}.form-group{display:flex;flex-direction:column;gap:7px}.form-group label{font-size:12px;font-weight:600;color:#475569}
+select,input{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px 13px;font-family:inherit;font-size:13px;background:white;outline:none;transition:.2s}
+select:focus,input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+.btn-tambah{border:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;padding:12px 18px;border-radius:10px;cursor:pointer;font-weight:700;white-space:nowrap;transition:.2s}.btn-tambah:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(37,99,235,.22)}
+.cart-panel{margin-top:20px}.cart-count{background:#eff6ff;color:#2563eb;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:700}.table-wrapper{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}th{background:#f8fafc;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.3px;padding:12px 10px;text-align:left;border-bottom:1px solid #e2e8f0}td{padding:13px 10px;border-bottom:1px solid #eef2f7;font-size:13px;color:#334155}tbody tr:hover{background:#f8fafc}
+.nama-barang{font-weight:700;color:#1e293b}.harga{color:#475569}.total-item{color:#2563eb;font-weight:700}.jumlah-control{display:flex;align-items:center;gap:7px}
+.btn-jumlah{width:27px;height:27px;border:1px solid #cbd5e1;background:white;color:#334155;border-radius:7px;cursor:pointer;font-weight:bold}.btn-jumlah:hover{background:#eff6ff;border-color:#93c5fd;color:#2563eb}
+.jumlah-angka{min-width:25px;text-align:center;font-weight:700}.btn-hapus{border:none;background:#fee2e2;color:#dc2626;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700}.btn-hapus:hover{background:#fecaca}
+.empty-cart{text-align:center;padding:45px 15px;color:#94a3b8}.empty-cart .empty-icon{font-size:42px;margin-bottom:10px}.empty-cart p{font-size:13px}
+.payment-panel{position:sticky;top:90px}.total-box{background:linear-gradient(135deg,#172554,#2563eb);color:white;border-radius:15px;padding:20px;margin-bottom:20px}.total-box small{opacity:.75;font-size:12px}.total-box .total-value{font-size:31px;font-weight:800;margin-top:5px;word-break:break-word}
+.payment-section{margin-top:5px}.payment-section label{display:block;color:#475569;font-size:12px;font-weight:700;margin-bottom:7px}.payment-input{font-size:18px;font-weight:700;padding:14px}
+.btn-kembalian{width:100%;margin-top:10px;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;padding:11px;border-radius:10px;cursor:pointer;font-weight:700}.btn-kembalian:hover{background:#dbeafe}
+.change-box{margin-top:15px;padding:15px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px}.change-box small{display:block;color:#64748b;font-size:11px;margin-bottom:5px}#kembalian{color:#16a34a;font-size:21px;font-weight:800}
+.btn-selesai{width:100%;border:none;margin-top:17px;padding:14px;border-radius:11px;background:linear-gradient(135deg,#16a34a,#15803d);color:white;cursor:pointer;font-size:14px;font-weight:800;transition:.2s}.btn-selesai:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(22,163,74,.20)}
+.payment-note{text-align:center;color:#94a3b8;font-size:10px;line-height:1.5;margin-top:13px}
+.info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.info-small{padding:14px;background:white;border:1px solid #e2e8f0;border-radius:13px}.info-small strong{display:block;color:#172554;font-size:13px;margin-bottom:3px}.info-small span{color:#64748b;font-size:11px}
+footer{text-align:center;color:#94a3b8;font-size:11px;margin-top:30px}
+@media(max-width:950px){.kasir-layout{grid-template-columns:1fr}.payment-panel{position:static}}
+@media(max-width:700px){.topbar{padding:14px 17px}.container{width:92%}.produk-box{grid-template-columns:1fr}.btn-tambah{width:100%}.info-row{grid-template-columns:1fr}}
+@media(max-width:500px){.brand-text h1{font-size:19px}.brand-text p{display:none}.btn-kembali{padding:8px 11px;font-size:11px}.page-title h2{font-size:22px}.panel{padding:16px}.total-box .total-value{font-size:27px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="brand"><div class="brand-icon">🧾</div><div class="brand-text"><h1>KasirKu</h1><p>WARUNG BANG ACILL</p></div></div>
+<button type="button" class="btn-kembali" onclick="window.location.href='dashboard.html'">← Dashboard</button>
+</header>
+
+<main class="container">
+<div class="page-title"><h2>🛒 Kasir Penjualan</h2><p>Pilih barang, masukkan jumlah, kemudian proses pembayaran pelanggan.</p></div>
+<div class="kasir-layout">
+<div>
+<section class="panel">
+<div class="panel-header"><h3>📦 Pilih Barang</h3><span id="statusBarang">Memuat barang...</span></div>
+<div class="produk-box">
+<div class="form-group"><label for="pilihBarang">Barang</label><select id="pilihBarang"><option value="">-- Memuat Barang --</option></select></div>
+<div class="form-group"><label for="jumlahBarang">Jumlah</label><input type="number" id="jumlahBarang" placeholder="Jumlah" min="1"></div>
+<button type="button" class="btn-tambah" onclick="tambahKeKeranjang()">+ Tambah</button>
+</div>
+</section>
+
+<section class="panel cart-panel">
+<div class="panel-header"><h3>🛒 Keranjang Belanja</h3><span class="cart-count" id="jumlahItemKeranjang">0 item</span></div>
+<div class="table-wrapper"><table><thead><tr><th>Produk</th><th>Harga</th><th>Jumlah</th><th>Total</th><th>Aksi</th></tr></thead><tbody id="dataKeranjang"></tbody></table></div>
+</section>
+
+<div class="info-row">
+<div class="info-small"><strong>💡 Tips</strong><span>Pastikan jumlah barang sesuai pesanan.</span></div>
+<div class="info-small"><strong>📦 Stok</strong><span>Stok otomatis berkurang setelah transaksi.</span></div>
+<div class="info-small"><strong>🧾 Struk</strong><span>Struk tersedia setelah transaksi selesai.</span></div>
+</div>
+</div>
+
+<aside class="panel payment-panel">
+<div class="panel-header"><h3>💳 Pembayaran</h3><span>Selesaikan transaksi</span></div>
+<div class="total-box"><small>TOTAL BELANJA</small><div class="total-value" id="totalBelanja">Rp0</div></div>
+<div class="payment-section"><label for="uangBayar">Uang Pembayaran</label><input type="number" id="uangBayar" class="payment-input" placeholder="Masukkan uang pelanggan" min="0"><button type="button" class="btn-kembalian" onclick="hitungKembalian()">💵 Hitung Kembalian</button></div>
+<div class="change-box"><small>KEMBALIAN PELANGGAN</small><p id="kembalian">Kembalian: Rp0</p></div>
+<button type="button" class="btn-selesai" onclick="selesaikanTransaksi()">✅ Selesaikan Transaksi</button>
+<div class="payment-note">Pastikan jumlah pembayaran sudah benar sebelum menyelesaikan transaksi.</div>
+</aside>
+</div>
+<footer>KasirKu © 2026 • WARUNG BANG ACILL</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+let barang = [];
+let keranjang = [];
+let userAktif = null;
+
+function formatRupiah(angka){
+    return "Rp" + Number(angka || 0).toLocaleString("id-ID");
+}
+
+async function cekUserLogin(){
+    const { data, error } = await supabaseClient.auth.getUser();
+    if(error || !data.user){
+        alert("Sesi login tidak ditemukan. Silakan login kembali.");
+        window.location.href = "index.html";
+        return null;
+    }
+    userAktif = data.user;
+    return userAktif;
+}
+
+async function muatDataBarang(){
+    const user = await cekUserLogin();
+    if(!user) return;
+
+    const { data, error } = await supabaseClient
+        .from("barang")
+        .select("id,kode,nama,harga,stok")
+        .eq("user_id", user.id)
+        .order("id", { ascending:false });
+
+    if(error){
+        console.error("Gagal mengambil data barang:", error);
+        document.getElementById("statusBarang").textContent = "Gagal memuat";
+        const select = document.getElementById("pilihBarang");
+        select.innerHTML = '<option value="">Gagal memuat barang</option>';
+        alert("Gagal mengambil data barang dari Supabase.");
+        return;
+    }
+
+    barang = data || [];
+    const select = document.getElementById("pilihBarang");
+    select.innerHTML = "";
+
+    const awal = document.createElement("option");
+    awal.value = "";
+    awal.textContent = barang.length ? "-- Pilih Barang --" : "Belum ada data barang";
+    select.appendChild(awal);
+
+    barang.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = `${item.nama} - ${formatRupiah(item.harga)} (Stok: ${item.stok})`;
+        select.appendChild(option);
+    });
+
+    document.getElementById("statusBarang").textContent =
+        barang.length + " barang tersedia";
+}
+
+function tambahKeKeranjang(){
+    const id = document.getElementById("pilihBarang").value;
+    const jumlah = Number(document.getElementById("jumlahBarang").value);
+
+    if(!id){
+        alert("Silakan pilih barang terlebih dahulu!");
+        return;
+    }
+    if(!Number.isInteger(jumlah) || jumlah <= 0){
+        alert("Jumlah barang harus lebih dari 0!");
+        return;
+    }
+
+    const item = barang.find(x => String(x.id) === String(id));
+    if(!item){
+        alert("Data barang tidak ditemukan!");
+        return;
+    }
+    if(jumlah > Number(item.stok)){
+        alert("Stok tidak cukup!\n\nStok tersedia: " + item.stok);
+        return;
+    }
+
+    const posisi = keranjang.findIndex(x => String(x.barangId) === String(item.id));
+
+    if(posisi !== -1){
+        const jumlahBaru = keranjang[posisi].jumlah + jumlah;
+        if(jumlahBaru > Number(item.stok)){
+            alert("Jumlah melebihi stok yang tersedia!");
+            return;
+        }
+        keranjang[posisi].jumlah = jumlahBaru;
+    }else{
+        keranjang.push({
+            barangId: item.id,
+            kode: item.kode,
+            nama: item.nama,
+            harga: Number(item.harga),
+            jumlah: jumlah
+        });
+    }
+
+    tampilkanKeranjang();
+    document.getElementById("jumlahBarang").value = "";
+    document.getElementById("pilihBarang").value = "";
+}
+
+function tampilkanKeranjang(){
+    const tabel = document.getElementById("dataKeranjang");
+    tabel.innerHTML = "";
+    let totalBelanja = 0;
+    let totalJumlah = 0;
+
+    if(!keranjang.length){
+        tabel.innerHTML = `<tr><td colspan="5" class="empty-cart"><div class="empty-icon">🛒</div><p>Keranjang masih kosong</p><p>Silakan pilih barang untuk memulai transaksi.</p></td></tr>`;
+    }
+
+    keranjang.forEach((item,index)=>{
+        const totalItem = item.harga * item.jumlah;
+        totalBelanja += totalItem;
+        totalJumlah += item.jumlah;
+
+        const baris = document.createElement("tr");
+        baris.innerHTML = `
+            <td><div class="nama-barang">${escapeHtml(item.nama)}</div></td>
+            <td><span class="harga">${formatRupiah(item.harga)}</span></td>
+            <td><div class="jumlah-control">
+                <button type="button" class="btn-jumlah" onclick="kurangiJumlah(${index})">−</button>
+                <span class="jumlah-angka">${item.jumlah}</span>
+                <button type="button" class="btn-jumlah" onclick="tambahJumlah(${index})">+</button>
+            </div></td>
+            <td><span class="total-item">${formatRupiah(totalItem)}</span></td>
+            <td><button type="button" class="btn-hapus" onclick="hapusDariKeranjang(${index})">🗑️ Hapus</button></td>`;
+        tabel.appendChild(baris);
+    });
+
+    document.getElementById("totalBelanja").textContent = formatRupiah(totalBelanja);
+    document.getElementById("jumlahItemKeranjang").textContent = totalJumlah + " item";
+}
+
+function escapeHtml(value){
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[ch]));
+}
+
+function tambahJumlah(index){
+    const item = keranjang[index];
+    if(!item) return;
+    const dataBarang = barang.find(x => String(x.id) === String(item.barangId));
+    if(!dataBarang) return;
+    if(item.jumlah >= Number(dataBarang.stok)){
+        alert("Jumlah sudah mencapai stok yang tersedia!");
+        return;
+    }
+    item.jumlah++;
+    tampilkanKeranjang();
+}
+
+function kurangiJumlah(index){
+    const item = keranjang[index];
+    if(!item) return;
+    if(item.jumlah <= 1){
+        hapusDariKeranjang(index);
+        return;
+    }
+    item.jumlah--;
+    tampilkanKeranjang();
+}
+
+function hapusDariKeranjang(index){
+    keranjang.splice(index,1);
+    tampilkanKeranjang();
+}
+
+function ambilTotalBelanja(){
+    return keranjang.reduce((total,item)=>total + (Number(item.harga) * Number(item.jumlah)),0);
+}
+
+function hitungKembalian(){
+    const total = ambilTotalBelanja();
+    const uang = Number(document.getElementById("uangBayar").value);
+
+    if(total <= 0){
+        alert("Belum ada barang di keranjang!");
+        return;
+    }
+    if(!Number.isFinite(uang) || uang <= 0){
+        alert("Masukkan uang pembayaran!");
+        return;
+    }
+    if(uang < total){
+        alert("Uang pembayaran kurang!\n\nTotal: " + formatRupiah(total));
+        document.getElementById("kembalian").textContent = "Uang masih kurang";
+        document.getElementById("kembalian").style.color = "#dc2626";
+        return;
+    }
+
+    const kembalian = uang - total;
+    const elemen = document.getElementById("kembalian");
+    elemen.textContent = "Kembalian: " + formatRupiah(kembalian);
+    elemen.style.color = "#16a34a";
+}
+
+async function selesaikanTransaksi(){
+    if(!keranjang.length){
+        alert("Keranjang masih kosong!");
+        return;
+    }
+
+    const total = ambilTotalBelanja();
+    const uang = Number(document.getElementById("uangBayar").value);
+
+    if(!Number.isFinite(uang) || uang <= 0){
+        alert("Masukkan uang pembayaran!");
+        return;
+    }
+    if(uang < total){
+        alert("Uang pembayaran masih kurang!");
+        return;
+    }
+
+    const kembalian = uang - total;
+    const yakin = confirm(
+        "Yakin ingin menyelesaikan transaksi?\n\n" +
+        "Total: " + formatRupiah(total) + "\n" +
+        "Bayar: " + formatRupiah(uang) + "\n" +
+        "Kembalian: " + formatRupiah(kembalian)
+    );
+    if(!yakin) return;
+
+    const user = await cekUserLogin();
+    if(!user) return;
+
+    // Ambil stok terbaru dari Supabase sebelum transaksi.
+    const ids = keranjang.map(item => item.barangId);
+    const { data: stokTerbaru, error: stokError } = await supabaseClient
+        .from("barang")
+        .select("id,kode,nama,harga,stok")
+        .in("id", ids)
+        .eq("user_id", user.id);
+
+    if(stokError){
+        console.error(stokError);
+        alert("Gagal memeriksa stok terbaru.");
+        return;
+    }
+
+    for(const item of keranjang){
+        const terbaru = stokTerbaru.find(x => String(x.id) === String(item.barangId));
+        if(!terbaru){
+            alert("Barang " + item.nama + " tidak ditemukan.");
+            return;
+        }
+        if(Number(terbaru.stok) < Number(item.jumlah)){
+            alert("Stok " + terbaru.nama + " tidak cukup.\n\nStok tersedia: " + terbaru.stok);
+            await muatDataBarang();
+            return;
+        }
+    }
+
+    const { data: transaksiBaru, error: transaksiError } = await supabaseClient
+        .from("transaksi")
+        .insert({
+            user_id: user.id,
+            total: total,
+            bayar: uang,
+            kembalian: kembalian
+        })
+        .select("id,tanggal,total,bayar,kembalian")
+        .single();
+
+    if(transaksiError){
+        console.error("Gagal menyimpan transaksi:", transaksiError);
+        alert("Gagal menyimpan transaksi ke Supabase.");
+        return;
+    }
+
+    const detail = keranjang.map(item => ({
+        transaksi_id: transaksiBaru.id,
+        user_id: user.id,
+        barang_id: item.barangId,
+        kode_barang: item.kode,
+        nama_barang: item.nama,
+        harga: item.harga,
+        jumlah: item.jumlah,
+        subtotal: item.harga * item.jumlah
+    }));
+
+    const { error: detailError } = await supabaseClient
+        .from("detail_transaksi")
+        .insert(detail);
+
+    if(detailError){
+        console.error("Gagal menyimpan detail transaksi:", detailError);
+        // Bersihkan transaksi induk jika detail gagal.
+        await supabaseClient.from("transaksi").delete().eq("id", transaksiBaru.id).eq("user_id", user.id);
+        alert("Gagal menyimpan detail transaksi. Transaksi dibatalkan.");
+        return;
+    }
+
+    for(const item of keranjang){
+        const terbaru = stokTerbaru.find(x => String(x.id) === String(item.barangId));
+        const stokBaru = Number(terbaru.stok) - Number(item.jumlah);
+
+        const { error: updateError } = await supabaseClient
+            .from("barang")
+            .update({ stok: stokBaru })
+            .eq("id", item.barangId)
+            .eq("user_id", user.id);
+
+        if(updateError){
+            console.error("Gagal mengurangi stok:", updateError);
+            alert("Transaksi tersimpan, tetapi stok " + item.nama + " gagal diperbarui. Silakan periksa data barang.");
+            return;
+        }
+    }
+
+    const dataStruk = {
+        id: String(transaksiBaru.id),
+        tanggal: transaksiBaru.tanggal
+            ? new Date(transaksiBaru.tanggal).toLocaleString("id-ID")
+            : new Date().toLocaleString("id-ID"),
+        items: keranjang.map(item => ({
+            kode: item.kode,
+            nama: item.nama,
+            harga: item.harga,
+            jumlah: item.jumlah,
+            subtotal: item.harga * item.jumlah
+        })),
+        total: total,
+        bayar: uang,
+        kembalian: kembalian
+    };
+
+    localStorage.setItem("strukTerakhir", JSON.stringify(dataStruk));
+    window.location.href = "struk.html";
+}
+
+document.addEventListener("DOMContentLoaded", async function(){
+    tampilkanKeranjang();
+    await muatDataBarang();
+
+    const jumlah = document.getElementById("jumlahBarang");
+    if(jumlah){
+        jumlah.addEventListener("keydown", function(event){
+            if(event.key === "Enter") tambahKeKeranjang();
+        });
+    }
+
+    const uang = document.getElementById("uangBayar");
+    if(uang){
+        uang.addEventListener("keydown", function(event){
+            if(event.key === "Enter") hitungKembalian();
+        });
+    }
+});
+</script>
+</body>
+</html>

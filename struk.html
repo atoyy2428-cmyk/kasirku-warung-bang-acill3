@@ -1,0 +1,1002 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Struk Transaksi - KasirKu
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            padding: 30px 15px;
+
+            background: #eef2f7;
+
+            font-family:
+                "Courier New",
+                Courier,
+                monospace;
+
+            color: #111827;
+
+        }
+
+
+        /* ==================================
+           AREA STRUK
+        ================================== */
+
+        .receipt-wrapper {
+
+            width: 100%;
+
+            display: flex;
+
+            justify-content: center;
+
+        }
+
+
+        .receipt {
+
+            width: 380px;
+
+            max-width: 100%;
+
+            background: white;
+
+            padding: 25px 22px;
+
+            box-shadow:
+                0 10px 35px
+                rgba(15, 23, 42, 0.12);
+
+            border-radius: 3px;
+
+        }
+
+
+        /* ==================================
+           HEADER STRUK
+        ================================== */
+
+        .store-header {
+
+            text-align: center;
+
+            padding-bottom: 15px;
+
+        }
+
+
+        .store-icon {
+
+            font-size: 32px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .store-name {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 23px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            margin: 0;
+
+        }
+
+
+        .store-subtitle {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 12px;
+
+            color: #64748b;
+
+            margin-top: 4px;
+
+        }
+
+
+        .store-address {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 10px;
+
+            color: #64748b;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* ==================================
+           GARIS
+        ================================== */
+
+        .line {
+
+            border-top:
+                1px dashed #64748b;
+
+            margin: 13px 0;
+
+        }
+
+
+        .double-line {
+
+            border-top:
+                3px double #111827;
+
+            margin: 13px 0;
+
+        }
+
+
+        /* ==================================
+           INFO TRANSAKSI
+        ================================== */
+
+        .transaction-info {
+
+            font-size: 11px;
+
+            line-height: 1.7;
+
+        }
+
+
+        .info-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+        }
+
+
+        .info-row span:last-child {
+
+            text-align: right;
+
+        }
+
+
+        /* ==================================
+           ITEM
+        ================================== */
+
+        .item {
+
+            margin: 9px 0;
+
+            font-size: 11px;
+
+        }
+
+
+        .item-name {
+
+            font-weight: bold;
+
+            margin-bottom: 3px;
+
+            word-break: break-word;
+
+        }
+
+
+        .item-detail {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            padding-left: 8px;
+
+            color: #374151;
+
+        }
+
+
+        /* ==================================
+           TOTAL
+        ================================== */
+
+        .total-section {
+
+            font-size: 12px;
+
+        }
+
+
+        .total-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin: 7px 0;
+
+        }
+
+
+        .total-row.grand-total {
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            margin-top: 10px;
+
+        }
+
+
+        .total-row.change {
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================
+           UCAPAN
+        ================================== */
+
+        .thank-you {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            padding-top: 15px;
+
+            border-top:
+                1px dashed #64748b;
+
+        }
+
+
+        .thank-you strong {
+
+            display: block;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .thank-you p {
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 10px;
+
+            color: #64748b;
+
+            margin: 3px 0;
+
+        }
+
+
+        /* ==================================
+           TOMBOL
+        ================================== */
+
+        .actions {
+
+            width: 380px;
+
+            max-width: 100%;
+
+            margin: 18px auto 0;
+
+            display: flex;
+
+            gap: 10px;
+
+        }
+
+
+        .actions button {
+
+            flex: 1;
+
+            border: none;
+
+            padding: 12px 10px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition: 0.2s;
+
+        }
+
+
+        .btn-print {
+
+            background: #2563eb;
+
+            color: white;
+
+        }
+
+
+        .btn-print:hover {
+
+            background: #1d4ed8;
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .btn-back {
+
+            background: white;
+
+            color: #334155;
+
+            border:
+                1px solid #cbd5e1 !important;
+
+        }
+
+
+        .btn-back:hover {
+
+            background: #f8fafc;
+
+        }
+
+
+        /* ==================================
+           RESPONSIVE
+        ================================== */
+
+        @media (max-width: 450px) {
+
+            body {
+
+                padding:
+                    15px 8px;
+
+            }
+
+
+            .receipt {
+
+                padding:
+                    20px 15px;
+
+            }
+
+
+            .actions {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+        /* ==================================
+           MODE CETAK
+        ================================== */
+
+        @media print {
+
+            @page {
+
+                size: 80mm auto;
+
+                margin: 0;
+
+            }
+
+
+            body {
+
+                background: white;
+
+                padding: 0;
+
+                margin: 0;
+
+            }
+
+
+            .receipt-wrapper {
+
+                display: block;
+
+            }
+
+
+            .receipt {
+
+                width: 80mm;
+
+                max-width: none;
+
+                padding:
+                    5mm 4mm;
+
+                box-shadow: none;
+
+                border-radius: 0;
+
+            }
+
+
+            .actions {
+
+                display: none !important;
+
+            }
+
+
+            .store-name {
+
+                font-size: 19px;
+
+            }
+
+
+            .store-subtitle {
+
+                font-size: 10px;
+
+            }
+
+
+            .store-address {
+
+                font-size: 9px;
+
+            }
+
+
+            .transaction-info,
+            .item,
+            .total-section {
+
+                font-size: 10px;
+
+            }
+
+
+            .total-row.grand-total {
+
+                font-size: 14px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==================================
+         STRUK
+    ================================== -->
+
+    <div class="receipt-wrapper">
+
+        <div class="receipt">
+
+
+            <!-- HEADER TOKO -->
+
+            <div class="store-header">
+
+                <div class="store-icon">
+                    🧾
+                </div>
+
+
+                <h1 class="store-name">
+                    WARUNG BANG ACILL
+                </h1>
+
+
+                <div class="store-subtitle">
+                    Struk Pembelian
+                </div>
+
+
+                <div class="store-address">
+                    Terima kasih telah berbelanja
+                </div>
+
+            </div>
+
+
+            <div class="double-line"></div>
+
+
+            <!-- INFO TRANSAKSI -->
+
+            <div
+                class="transaction-info"
+                id="infoTransaksi">
+
+            </div>
+
+
+            <div class="line"></div>
+
+
+            <!-- DAFTAR BARANG -->
+
+            <div id="daftarBarang">
+
+            </div>
+
+
+            <div class="double-line"></div>
+
+
+            <!-- TOTAL -->
+
+            <div
+                class="total-section"
+                id="totalTransaksi">
+
+            </div>
+
+
+            <!-- UCAPAN -->
+
+            <div class="thank-you">
+
+                <strong>
+                    TERIMA KASIH 🙏
+                </strong>
+
+                <p>
+                    Barang yang sudah dibeli
+                </p>
+
+                <p>
+                    tidak dapat dikembalikan.
+                </p>
+
+                <p>
+                    Simpan struk ini sebagai bukti pembelian.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================
+         TOMBOL
+    ================================== -->
+
+    <div class="actions">
+
+        <button
+            type="button"
+            class="btn-print"
+            onclick="window.print()">
+
+            🖨️ Cetak Struk
+
+        </button>
+
+
+        <button
+            type="button"
+            class="btn-back"
+            onclick="window.location.href='transaksi.html'">
+
+            ← Kembali ke Kasir
+
+        </button>
+
+    </div>
+
+
+
+    <!-- ==================================
+         JAVASCRIPT STRUK
+    ================================== -->
+
+    <script>
+
+
+        /* ==================================
+           FORMAT RUPIAH
+        ================================== */
+
+        function formatRupiah(angka) {
+
+            return "Rp" +
+                Number(angka || 0)
+                    .toLocaleString("id-ID");
+
+        }
+
+
+
+        /* ==================================
+           FORMAT NOMOR TRANSAKSI
+        ================================== */
+
+        function buatNomorTransaksi(data) {
+
+            if (!data) {
+
+                return "TRX-000000";
+
+            }
+
+
+            const tanggal =
+                String(
+                    data.tanggal || ""
+                )
+                .replace(
+                    /\D/g,
+                    ""
+                );
+
+
+            const bagian =
+                tanggal.slice(-8);
+
+
+            return "TRX-" +
+                (bagian || "00000000");
+
+        }
+
+
+
+        /* ==================================
+           TAMPILKAN STRUK
+        ================================== */
+
+        function tampilkanStruk() {
+
+
+            const data =
+                JSON.parse(
+                    localStorage.getItem(
+                        "strukTerakhir"
+                    )
+                );
+
+
+            /* ==================================
+               JIKA TIDAK ADA DATA
+            ================================== */
+
+            if (!data) {
+
+                document.getElementById(
+                    "infoTransaksi"
+                ).innerHTML = `
+
+                    <div
+                        style="
+                            text-align:center;
+                            padding:30px 10px;
+                            font-family:Segoe UI,Arial;
+                        ">
+
+                        <strong>
+                            Data struk tidak ditemukan.
+                        </strong>
+
+                        <p
+                            style="
+                                color:#64748b;
+                                font-size:11px;
+                                margin-top:7px;
+                            ">
+
+                            Silakan lakukan transaksi
+                            terlebih dahulu.
+
+                        </p>
+
+                    </div>
+
+                `;
+
+
+                return;
+
+            }
+
+
+
+            /* ==================================
+               INFO TRANSAKSI
+            ================================== */
+
+            const nomor =
+                buatNomorTransaksi(data);
+
+
+            document.getElementById(
+                "infoTransaksi"
+            ).innerHTML = `
+
+                <div class="info-row">
+
+                    <span>
+                        No. Transaksi
+                    </span>
+
+                    <span>
+                        ${nomor}
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>
+                        Tanggal
+                    </span>
+
+                    <span>
+                        ${data.tanggal || "-"}
+                    </span>
+
+                </div>
+
+            `;
+
+
+
+            /* ==================================
+               DAFTAR BARANG
+            ================================== */
+
+            const daftar =
+                document.getElementById(
+                    "daftarBarang"
+                );
+
+
+            daftar.innerHTML = "";
+
+
+            if (
+                !Array.isArray(
+                    data.items
+                ) ||
+                data.items.length === 0
+            ) {
+
+                daftar.innerHTML = `
+
+                    <div
+                        style="
+                            text-align:center;
+                            color:#64748b;
+                            padding:15px;
+                        ">
+
+                        Tidak ada barang.
+
+                    </div>
+
+                `;
+
+            }
+
+            else {
+
+                data.items.forEach(
+                    function(item) {
+
+
+                        const totalItem =
+                            Number(
+                                item.harga || 0
+                            ) *
+                            Number(
+                                item.jumlah || 0
+                            );
+
+
+                        const itemElement =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        itemElement.className =
+                            "item";
+
+
+                        itemElement.innerHTML = `
+
+                            <div class="item-name">
+
+                                ${item.nama || "Barang"}
+
+                            </div>
+
+
+                            <div class="item-detail">
+
+                                <span>
+
+                                    ${item.jumlah || 0}
+                                    x
+                                    ${formatRupiah(item.harga)}
+
+                                </span>
+
+
+                                <span>
+
+                                    ${formatRupiah(totalItem)}
+
+                                </span>
+
+                            </div>
+
+                        `;
+
+
+                        daftar.appendChild(
+                            itemElement
+                        );
+
+                    }
+                );
+
+            }
+
+
+
+            /* ==================================
+               TOTAL
+            ================================== */
+
+            document.getElementById(
+                "totalTransaksi"
+            ).innerHTML = `
+
+                <div class="total-row grand-total">
+
+                    <span>
+                        TOTAL
+                    </span>
+
+                    <span>
+                        ${formatRupiah(data.total)}
+                    </span>
+
+                </div>
+
+
+                <div class="total-row">
+
+                    <span>
+                        Tunai
+                    </span>
+
+                    <span>
+                        ${formatRupiah(data.bayar)}
+                    </span>
+
+                </div>
+
+
+                <div class="total-row change">
+
+                    <span>
+                        Kembalian
+                    </span>
+
+                    <span>
+                        ${formatRupiah(data.kembalian)}
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+
+
+
+        /* ==================================
+           JALANKAN
+        ================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                tampilkanStruk();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
+```

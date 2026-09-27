@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>KasirKu - Pengeluaran</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
+</head>
+
+
+<body>
+
+    <div class="dashboard">
+
+
+        <!-- ==========================================
+             HEADER
+        =========================================== -->
+
+        <header class="header">
+
+            <h1>KasirKu</h1>
+
+            <button
+                onclick="window.location.href='dashboard.html'"
+            >
+                Kembali
+            </button>
+
+        </header>
+
+
+
+        <!-- ==========================================
+             CONTENT
+        =========================================== -->
+
+        <main class="content">
+
+            <h2>💸 Pengeluaran</h2>
+
+            <p>
+                Catat pengeluaran toko.
+            </p>
+
+            <br>
+
+
+
+            <!-- ==========================================
+                 TOMBOL TAMBAH
+            =========================================== -->
+
+            <button
+                onclick="tampilFormPengeluaran()"
+            >
+                + Tambah Pengeluaran
+            </button>
+
+
+
+            <!-- ==========================================
+                 FORM PENGELUARAN
+            =========================================== -->
+
+            <div
+                id="formPengeluaran"
+                style="
+                    display:none;
+                    margin-top:20px;
+                "
+            >
+
+                <h3 id="judulFormPengeluaran">
+                    Tambah Pengeluaran
+                </h3>
+
+
+                <input
+                    type="date"
+                    id="tanggalPengeluaran"
+                >
+
+                <br><br>
+
+
+                <input
+                    type="text"
+                    id="keteranganPengeluaran"
+                    placeholder="Keterangan"
+                >
+
+                <br><br>
+
+
+                <input
+                    type="number"
+                    id="jumlahPengeluaran"
+                    placeholder="Jumlah"
+                    min="1"
+                >
+
+                <br><br>
+
+
+                <button
+                    onclick="simpanPengeluaran()"
+                    id="tombolSimpanPengeluaran"
+                >
+                    Simpan Pengeluaran
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="batalFormPengeluaran()"
+                >
+                    Batal
+                </button>
+
+            </div>
+
+
+            <br><br>
+
+
+
+            <!-- ==========================================
+                 TABEL PENGELUARAN
+            =========================================== -->
+
+            <table
+                border="1"
+                width="100%"
+                cellpadding="10"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Tanggal
+                        </th>
+
+                        <th>
+                            Keterangan
+                        </th>
+
+                        <th>
+                            Jumlah
+                        </th>
+
+                        <th>
+                            Aksi
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="dataPengeluaran">
+
+                </tbody>
+
+            </table>
+
+        </main>
+
+    </div>
+
+
+
+    <script>
+
+        // ==========================================
+        // VARIABEL
+        // ==========================================
+
+        let userAktif = null;
+
+        let idPengeluaranSedangDiedit = null;
+
+
+
+        // ==========================================
+        // FORMAT RUPIAH
+        // ==========================================
+
+        function formatRupiahPengeluaran(angka) {
+
+            return new Intl.NumberFormat(
+                "id-ID",
+                {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0
+                }
+            ).format(
+                Number(angka || 0)
+            );
+
+        }
+
+
+
+        // ==========================================
+        // FORMAT TANGGAL
+        // ==========================================
+
+        function formatTanggalPengeluaran(tanggal) {
+
+            if (!tanggal) {
+
+                return "-";
+
+            }
+
+
+            const tanggalObj =
+                new Date(tanggal);
+
+
+            if (
+                isNaN(
+                    tanggalObj.getTime()
+                )
+            ) {
+
+                return "-";
+
+            }
+
+
+            return tanggalObj.toLocaleDateString(
+                "id-ID",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+
+        // ==========================================
+        // FORMAT TANGGAL UNTUK INPUT
+        // ==========================================
+
+        function formatTanggalInput(tanggal) {
+
+            if (!tanggal) {
+
+                return "";
+
+            }
+
+
+            const tanggalObj =
+                new Date(tanggal);
+
+
+            if (
+                isNaN(
+                    tanggalObj.getTime()
+                )
+            ) {
+
+                return "";
+
+            }
+
+
+            const tahun =
+                tanggalObj.getFullYear();
+
+
+            const bulan =
+                String(
+                    tanggalObj.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const hari =
+                String(
+                    tanggalObj.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            return (
+                tahun +
+                "-" +
+                bulan +
+                "-" +
+                hari
+            );
+
+        }
+
+
+
+        // ==========================================
+        // TANGGAL HARI INI
+        // ==========================================
+
+        function tanggalHariIni() {
+
+            const sekarang =
+                new Date();
+
+
+            const tahun =
+                sekarang.getFullYear();
+
+
+            const bulan =
+                String(
+                    sekarang.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const tanggal =
+                String(
+                    sekarang.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            return (
+                tahun +
+                "-" +
+                bulan +
+                "-" +
+                tanggal
+            );
+
+        }
+
+
+
+        // ==========================================
+        // CEK LOGIN
+        // ==========================================
+
+        async function cekUserLogin() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getUser();
+
+
+            if (
+                error ||
+                !data ||
+                !data.user
+            ) {
+
+                alert(
+                    "Sesi login tidak ditemukan. Silakan login kembali."
+                );
+
+
+                window.location.href =
+                    "index.html";
+
+
+                return null;
+
+            }
+
+
+            userAktif =
+                data.user;
+
+
+            return userAktif;
+
+        }
+
+
+
+        // ==========================================
+        // AMBIL DATA PENGELUARAN
+        // DARI SUPABASE
+        // ==========================================
+
+        async function ambilDataPengeluaran() {
+
+            if (!userAktif) {
+
+                return [];
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+
+                    .from("pengeluaran")
+
+                    .select(
+                        "id,user_id,tanggal,keterangan,jumlah"
+                    )
+
+                    .eq(
+                        "user_id",
+                        userAktif.id
+                    )
+
+                    .order(
+                        "tanggal",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Gagal mengambil pengeluaran:",
+                    error
+                );
+
+
+                alert(
+                    "Gagal mengambil data pengeluaran dari Supabase.\n\n" +
+                    error.message
+                );
+
+
+                return [];
+
+            }
+
+
+            return data || [];
+
+        }
+
+
+
+        // ==========================================
+        // TAMPILKAN FORM
+        // ==========================================
+
+        function tampilFormPengeluaran() {
+
+            const form =
+                document.getElementById(
+                    "formPengeluaran"
+                );
+
+
+            form.style.display =
+                "block";
+
+
+            document.getElementById(
+                "judulFormPengeluaran"
+            ).textContent =
+                idPengeluaranSedangDiedit === null
+                    ? "Tambah Pengeluaran"
+                    : "Edit Pengeluaran";
+
+
+            // Kalau tambah data baru,
+            // isi tanggal hari ini.
+
+            if (
+                idPengeluaranSedangDiedit === null
+            ) {
+
+                const inputTanggal =
+                    document.getElementById(
+                        "tanggalPengeluaran"
+                    );
+
+
+                if (!inputTanggal.value) {
+
+                    inputTanggal.value =
+                        tanggalHariIni();
+
+                }
+
+            }
+
+        }
+
+
+
+        // ==========================================
+        // BATAL / TUTUP FORM
+        // ==========================================
+
+        function batalFormPengeluaran() {
+
+            document.getElementById(
+                "formPengeluaran"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "tanggalPengeluaran"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "keteranganPengeluaran"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "jumlahPengeluaran"
+            ).value =
+                "";
+
+
+            idPengeluaranSedangDiedit =
+                null;
+
+
+            document.getElementById(
+                "judulFormPengeluaran"
+            ).textContent =
+                "Tambah Pengeluaran";
+
+        }
+
+
+
+        // ==========================================
+        // SIMPAN PENGELUARAN
+        // TAMBAH / EDIT
+        // ==========================================
+
+        async function simpanPengeluaran() {
+
+            const tanggal =
+                document.getElementById(
+                    "tanggalPengeluaran"
+                ).value;
+
+
+            const keterangan =
+                document.getElementById(
+                    "keteranganPengeluaran"
+                ).value.trim();
+
+
+            const jumlah =
+                Number(
+                    document.getElementById(
+                        "jumlahPengeluaran"
+                    ).value
+                );
+
+
+            // ------------------------------------------
+            // VALIDASI TANGGAL
+            // ------------------------------------------
+
+            if (!tanggal) {
+
+                alert(
+                    "Tanggal belum dipilih."
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // VALIDASI KETERANGAN
+            // ------------------------------------------
+
+            if (!keterangan) {
+
+                alert(
+                    "Keterangan belum diisi."
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // VALIDASI JUMLAH
+            // ------------------------------------------
+
+            if (
+                !jumlah ||
+                jumlah <= 0
+            ) {
+
+                alert(
+                    "Jumlah pengeluaran harus lebih dari 0."
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // CEK USER
+            // ------------------------------------------
+
+            if (!userAktif) {
+
+                alert(
+                    "User belum terdeteksi. Silakan login kembali."
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // TOMBOL
+            // ------------------------------------------
+
+            const tombol =
+                document.getElementById(
+                    "tombolSimpanPengeluaran"
+                );
+
+
+            tombol.disabled =
+                true;
+
+
+            tombol.textContent =
+                "Menyimpan...";
+
+
+            try {
+
+                // ======================================
+                // MODE EDIT
+                // ======================================
+
+                if (
+                    idPengeluaranSedangDiedit !== null
+                ) {
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+
+                            .from("pengeluaran")
+
+                            .update({
+
+                                tanggal:
+                                    `${tanggal}T00:00:00+07:00`,
+
+                                keterangan:
+                                    keterangan,
+
+                                jumlah:
+                                    jumlah
+
+                            })
+
+                            .eq(
+                                "id",
+                                idPengeluaranSedangDiedit
+                            )
+
+                            .eq(
+                                "user_id",
+                                userAktif.id
+                            );
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    alert(
+                        "Pengeluaran berhasil diperbarui."
+                    );
+
+                }
+
+
+
+                // ======================================
+                // MODE TAMBAH
+                // ======================================
+
+                else {
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+
+                            .from("pengeluaran")
+
+                            .insert({
+
+                                user_id:
+                                    userAktif.id,
+
+                                tanggal:
+                                    `${tanggal}T00:00:00+07:00`,
+
+                                keterangan:
+                                    keterangan,
+
+                                jumlah:
+                                    jumlah
+
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    alert(
+                        "Pengeluaran berhasil disimpan ke Supabase."
+                    );
+
+                }
+
+
+                // ======================================
+                // RESET FORM
+                // ======================================
+
+                batalFormPengeluaran();
+
+
+                // ======================================
+                // REFRESH DATA
+                // ======================================
+
+                await tampilkanPengeluaran();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Gagal menyimpan pengeluaran:",
+                    error
+                );
+
+
+                alert(
+                    "Pengeluaran gagal disimpan.\n\n" +
+                    (
+                        error.message ||
+                        "Terjadi kesalahan pada Supabase."
+                    )
+                );
+
+            } finally {
+
+                tombol.disabled =
+                    false;
+
+
+                tombol.textContent =
+                    "Simpan Pengeluaran";
+
+            }
+
+        }
+
+
+
+        // ==========================================
+        // TAMPILKAN DATA
+        // ==========================================
+
+        async function tampilkanPengeluaran() {
+
+            const tbody =
+                document.getElementById(
+                    "dataPengeluaran"
+                );
+
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        style="
+                            text-align:center;
+                        "
+                    >
+
+                        Memuat data pengeluaran...
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            const data =
+                await ambilDataPengeluaran();
+
+
+            tbody.innerHTML =
+                "";
+
+
+            // ======================================
+            // DATA KOSONG
+            // ======================================
+
+            if (
+                data.length === 0
+            ) {
+
+                tbody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            style="
+                                text-align:center;
+                            "
+                        >
+
+                            Belum ada data pengeluaran.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            // ======================================
+            // TAMPILKAN DATA
+            // ======================================
+
+            data.forEach(
+                function(item) {
+
+                    const tr =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    // ----------------------------------
+                    // TANGGAL
+                    // ----------------------------------
+
+                    const tdTanggal =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    tdTanggal.textContent =
+                        formatTanggalPengeluaran(
+                            item.tanggal
+                        );
+
+
+
+                    // ----------------------------------
+                    // KETERANGAN
+                    // ----------------------------------
+
+                    const tdKeterangan =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    tdKeterangan.textContent =
+                        item.keterangan ||
+                        "-";
+
+
+
+                    // ----------------------------------
+                    // JUMLAH
+                    // ----------------------------------
+
+                    const tdJumlah =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    tdJumlah.textContent =
+                        formatRupiahPengeluaran(
+                            item.jumlah
+                        );
+
+
+
+                    // ----------------------------------
+                    // AKSI
+                    // ----------------------------------
+
+                    const tdAksi =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    // Tombol Edit
+
+                    const tombolEdit =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    tombolEdit.textContent =
+                        "✏️ Edit";
+
+
+                    tombolEdit.onclick =
+                        function() {
+
+                            editPengeluaran(
+                                item
+                            );
+
+                        };
+
+
+                    tdAksi.appendChild(
+                        tombolEdit
+                    );
+
+
+                    // Spasi
+
+                    tdAksi.appendChild(
+                        document.createTextNode(
+                            " "
+                        )
+                    );
+
+
+                    // Tombol Hapus
+
+                    const tombolHapus =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    tombolHapus.textContent =
+                        "🗑️ Hapus";
+
+
+                    tombolHapus.onclick =
+                        function() {
+
+                            hapusPengeluaran(
+                                item.id
+                            );
+
+                        };
+
+
+                    tdAksi.appendChild(
+                        tombolHapus
+                    );
+
+
+
+                    // ----------------------------------
+                    // MASUKKAN KE BARIS
+                    // ----------------------------------
+
+                    tr.appendChild(
+                        tdTanggal
+                    );
+
+
+                    tr.appendChild(
+                        tdKeterangan
+                    );
+
+
+                    tr.appendChild(
+                        tdJumlah
+                    );
+
+
+                    tr.appendChild(
+                        tdAksi
+                    );
+
+
+                    tbody.appendChild(
+                        tr
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        // ==========================================
+        // EDIT PENGELUARAN
+        // ==========================================
+
+        function editPengeluaran(item) {
+
+            if (!item) {
+
+                alert(
+                    "Data pengeluaran tidak ditemukan."
+                );
+
+                return;
+
+            }
+
+
+            idPengeluaranSedangDiedit =
+                item.id;
+
+
+            document.getElementById(
+                "tanggalPengeluaran"
+            ).value =
+                formatTanggalInput(
+                    item.tanggal
+                );
+
+
+            document.getElementById(
+                "keteranganPengeluaran"
+            ).value =
+                item.keterangan ||
+                "";
+
+
+            document.getElementById(
+                "jumlahPengeluaran"
+            ).value =
+                item.jumlah ||
+                "";
+
+
+            document.getElementById(
+                "judulFormPengeluaran"
+            ).textContent =
+                "Edit Pengeluaran";
+
+
+            document.getElementById(
+                "formPengeluaran"
+            ).style.display =
+                "block";
+
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        }
+
+
+
+        // ==========================================
+        // HAPUS PENGELUARAN
+        // ==========================================
+
+        async function hapusPengeluaran(id) {
+
+            const yakin =
+                confirm(
+                    "Apakah kamu yakin ingin menghapus pengeluaran ini?"
+                );
+
+
+            if (!yakin) {
+
+                return;
+
+            }
+
+
+            if (!userAktif) {
+
+                alert(
+                    "User belum terdeteksi."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+
+                        .from("pengeluaran")
+
+                        .delete()
+
+                        .eq(
+                            "id",
+                            id
+                        )
+
+                        .eq(
+                            "user_id",
+                            userAktif.id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                alert(
+                    "Pengeluaran berhasil dihapus."
+                );
+
+
+                await tampilkanPengeluaran();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Gagal menghapus pengeluaran:",
+                    error
+                );
+
+
+                alert(
+                    "Pengeluaran gagal dihapus.\n\n" +
+                    (
+                        error.message ||
+                        "Terjadi kesalahan pada Supabase."
+                    )
+                );
+
+            }
+
+        }
+
+
+
+        // ==========================================
+        // JALANKAN SAAT HALAMAN DIBUKA
+        // ==========================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function() {
+
+                const user =
+                    await cekUserLogin();
+
+
+                if (!user) {
+
+                    return;
+
+                }
+
+
+                await tampilkanPengeluaran();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

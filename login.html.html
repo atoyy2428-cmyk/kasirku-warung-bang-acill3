@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - KasirKu</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <section class="card login-card">
+
+        <div style="text-align:center; margin-bottom:25px;">
+
+            <h1>🧾 KasirKu</h1>
+
+            <h2>WARUNG BANG ACILL</h2>
+
+            <p>
+                Sistem Kasir Online
+            </p>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <h2>🔐 Login Kasir</h2>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Masukkan email"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Masukkan password"
+                    required>
+
+            </div>
+
+
+            <div
+                id="message"
+                style="
+                    margin:15px 0;
+                    font-weight:bold;
+                    text-align:center;
+                ">
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary"
+                style="width:100%;">
+                🔐 Login
+            </button>
+
+        </form>
+
+
+        <div
+            style="
+                text-align:center;
+                margin:25px 0 15px;
+            ">
+
+            <span>
+                Belum punya akun?
+            </span>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="btnBukaDaftar"
+            class="btn-secondary"
+            style="width:100%;">
+
+            👤 Daftar Akun Kasir
+
+        </button>
+
+    </section>
+
+</div>
+
+
+<!-- MODAL DAFTAR -->
+
+<div
+    id="modalDaftar"
+    style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.6);
+        z-index:999;
+        overflow:auto;
+    ">
+
+    <div
+        class="card"
+        style="
+            max-width:500px;
+            margin:40px auto;
+        ">
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+            ">
+
+            <h2>👤 Daftar Akun Kasir</h2>
+
+            <button
+                type="button"
+                id="btnTutupDaftar"
+                class="btn-danger">
+                ✕
+            </button>
+
+        </div>
+
+
+        <form id="daftarForm">
+
+            <!-- NAMA -->
+
+            <div class="form-group">
+
+                <label for="namaDaftar">
+                    Nama Kasir
+                </label>
+
+                <input
+                    type="text"
+                    id="namaDaftar"
+                    placeholder="Nama lengkap"
+                    required>
+
+            </div>
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label for="usernameDaftar">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="usernameDaftar"
+                    placeholder="Username kasir"
+                    required>
+
+            </div>
+
+
+            <!-- TELEPON -->
+
+            <div class="form-group">
+
+                <label for="teleponDaftar">
+                    Nomor HP
+                </label>
+
+                <input
+                    type="tel"
+                    id="teleponDaftar"
+                    placeholder="Nomor HP"
+                    required>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="emailDaftar">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="emailDaftar"
+                    placeholder="contoh@email.com"
+                    required>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="passwordDaftar">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="passwordDaftar"
+                    placeholder="Minimal 6 karakter"
+                    required
+                    minlength="6">
+
+            </div>
+
+
+            <!-- KONFIRMASI -->
+
+            <div class="form-group">
+
+                <label for="konfirmasiPasswordDaftar">
+                    Konfirmasi Password
+                </label>
+
+                <input
+                    type="password"
+                    id="konfirmasiPasswordDaftar"
+                    placeholder="Ulangi password"
+                    required
+                    minlength="6">
+
+            </div>
+
+
+            <div
+                id="messageDaftar"
+                style="
+                    margin:15px 0;
+                    font-weight:bold;
+                    text-align:center;
+                ">
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary"
+                style="width:100%;">
+
+                📝 Buat Akun
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const daftarForm =
+        document.getElementById("daftarForm");
+
+    const modalDaftar =
+        document.getElementById("modalDaftar");
+
+    const btnBukaDaftar =
+        document.getElementById("btnBukaDaftar");
+
+    const btnTutupDaftar =
+        document.getElementById("btnTutupDaftar");
+
+
+    /*
+     * CEK SESSION SUPABASE
+     */
+
+    const {
+        data: {
+            session
+        }
+    } = await supabaseClient.auth.getSession();
+
+
+    if (session) {
+
+        window.location.href =
+            "dashboard.html";
+
+        return;
+
+    }
+
+
+    /*
+     * BUKA MODAL DAFTAR
+     */
+
+    btnBukaDaftar.addEventListener(
+        "click",
+        function () {
+
+            modalDaftar.style.display =
+                "block";
+
+        }
+    );
+
+
+    /*
+     * TUTUP MODAL
+     */
+
+    btnTutupDaftar.addEventListener(
+        "click",
+        function () {
+
+            modalDaftar.style.display =
+                "none";
+
+        }
+    );
+
+
+    /*
+     * KLIK AREA LUAR MODAL
+     */
+
+    modalDaftar.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === modalDaftar
+            ) {
+
+                modalDaftar.style.display =
+                    "none";
+
+            }
+
+        }
+    );
+
+
+    /*
+     * LOGIN
+     */
+
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const email =
+                document.getElementById(
+                    "email"
+                ).value.trim();
+
+            const password =
+                document.getElementById(
+                    "password"
+                ).value;
+
+
+            const message =
+                document.getElementById(
+                    "message"
+                );
+
+
+            message.textContent =
+                "Sedang login...";
+
+            message.style.color =
+                "black";
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient.auth
+                .signInWithPassword({
+
+                    email: email,
+                    password: password
+
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+                message.textContent =
+                    "Login gagal: " +
+                    error.message;
+
+                message.style.color =
+                    "red";
+
+                return;
+
+            }
+
+
+            /*
+             * SIMPAN AKUN AKTIF
+             * UNTUK KOMPATIBILITAS
+             * DENGAN KASIRKU LAMA
+             */
+
+            const user =
+                data.user;
+
+
+            const {
+                data: profile
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", user.id)
+                    .maybeSingle();
+
+
+            const akunAktif = {
+
+                id: user.id,
+
+                nama:
+                    profile?.nama ||
+                    user.user_metadata?.nama ||
+                    "Kasir",
+
+                username:
+                    profile?.username ||
+                    user.user_metadata?.username ||
+                    "",
+
+                telepon:
+                    profile?.telepon ||
+                    user.user_metadata?.telepon ||
+                    "",
+
+                email:
+                    user.email || ""
+
+            };
+
+
+            localStorage.setItem(
+                "akunAktif",
+                JSON.stringify(akunAktif)
+            );
+
+
+            message.textContent =
+                "Login berhasil!";
+
+            message.style.color =
+                "green";
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                },
+                500
+            );
+
+        }
+    );
+
+
+    /*
+     * DAFTAR AKUN
+     */
+
+    daftarForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const nama =
+                document.getElementById(
+                    "namaDaftar"
+                ).value.trim();
+
+            const username =
+                document.getElementById(
+                    "usernameDaftar"
+                ).value.trim();
+
+            const telepon =
+                document.getElementById(
+                    "teleponDaftar"
+                ).value.trim();
+
+            const email =
+                document.getElementById(
+                    "emailDaftar"
+                ).value.trim();
+
+            const password =
+                document.getElementById(
+                    "passwordDaftar"
+                ).value;
+
+            const konfirmasi =
+                document.getElementById(
+                    "konfirmasiPasswordDaftar"
+                ).value;
+
+
+            const message =
+                document.getElementById(
+                    "messageDaftar"
+                );
+
+
+            if (
+                password !== konfirmasi
+            ) {
+
+                message.textContent =
+                    "Konfirmasi password tidak sama.";
+
+                message.style.color =
+                    "red";
+
+                return;
+
+            }
+
+
+            if (password.length < 6) {
+
+                message.textContent =
+                    "Password minimal 6 karakter.";
+
+                message.style.color =
+                    "red";
+
+                return;
+
+            }
+
+
+            message.textContent =
+                "Membuat akun...";
+
+            message.style.color =
+                "black";
+
+
+            /*
+             * CEK USERNAME DI PROFILES
+             */
+
+            const {
+                data: usernameAda,
+                error: usernameError
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("id")
+                    .eq("username", username)
+                    .maybeSingle();
+
+
+            /*
+             * Jika gagal bukan karena
+             * username ditemukan, tampilkan error
+             */
+
+            if (
+                usernameError &&
+                usernameError.code !== "PGRST116"
+            ) {
+
+                console.error(
+                    usernameError
+                );
+
+                /*
+                 * RLS dapat menyebabkan
+                 * pengecekan ini gagal
+                 * untuk user anonim.
+                 *
+                 * Kita tetap lanjutkan
+                 * pendaftaran.
+                 */
+
+            }
+
+
+            if (usernameAda) {
+
+                message.textContent =
+                    "Username sudah digunakan.";
+
+                message.style.color =
+                    "red";
+
+                return;
+
+            }
+
+
+            /*
+             * SUPABASE AUTH SIGN UP
+             */
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth
+                    .signUp({
+
+                        email: email,
+
+                        password: password,
+
+                        options: {
+
+                            data: {
+
+                                nama: nama,
+
+                                username:
+                                    username,
+
+                                telepon:
+                                    telepon
+
+                            }
+
+                        }
+
+                    });
+
+
+            if (error) {
+
+                console.error(
+                    "Daftar error:",
+                    error
+                );
+
+                message.textContent =
+                    "Pendaftaran gagal: " +
+                    error.message;
+
+                message.style.color =
+                    "red";
+
+                return;
+
+            }
+
+
+            /*
+             * Jika email confirmation aktif,
+             * session bisa null.
+             */
+
+            if (!data.session) {
+
+                message.textContent =
+                    "Akun berhasil dibuat. " +
+                    "Silakan cek email untuk " +
+                    "konfirmasi akun sebelum login.";
+
+                message.style.color =
+                    "green";
+
+                return;
+
+            }
+
+
+            /*
+             * Jika auto-confirm aktif,
+             * langsung login.
+             */
+
+            message.textContent =
+                "Akun berhasil dibuat!";
+
+            message.style.color =
+                "green";
+
+
+            const user =
+                data.user;
+
+
+            const {
+                data: profile
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", user.id)
+                    .maybeSingle();
+
+
+            const akunAktif = {
+
+                id: user.id,
+
+                nama:
+                    profile?.nama ||
+                    nama,
+
+                username:
+                    profile?.username ||
+                    username,
+
+                telepon:
+                    profile?.telepon ||
+                    telepon,
+
+                email:
+                    user.email ||
+                    email
+
+            };
+
+
+            localStorage.setItem(
+                "akunAktif",
+                JSON.stringify(akunAktif)
+            );
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                },
+                700
+            );
+
+        }
+    );
+
+});
+
+</script>
+
+</body>
+</html>
